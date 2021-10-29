@@ -8,16 +8,26 @@ import 'package:snackbars/snackbars.dart';
 
 import 'event_snackbars.dart';
 
-class ScaffoldEventLayer extends StatelessWidget {
+class ScaffoldEventLayer extends StatefulWidget {
   final Scaffold scaffold;
-  final events = Inject().get<EventBus>();
 
   ScaffoldEventLayer({Key? key, required this.scaffold}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  _ScaffoldEventLayerState createState() => _ScaffoldEventLayerState();
+}
+
+class _ScaffoldEventLayerState extends State<ScaffoldEventLayer> {
+  final events = Inject().get<EventBus>();
+
+  @override
+  void didChangeDependencies() {
     _attachToEvents(context);
-    return scaffold;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.scaffold;
   }
 
   void _attachToEvents(BuildContext context) {
