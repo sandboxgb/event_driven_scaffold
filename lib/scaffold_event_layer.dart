@@ -39,6 +39,14 @@ class _ScaffoldEventLayerState extends State<ScaffoldEventLayer> {
       SnackBars.success(context, message: event.message);
     });
 
+    events.on<InfoAppEvent>().listen((event) {
+      SnackBars.info(context, message: event.message);
+    });
+
+    events.on<WarningAppEvent>().listen((event) {
+      SnackBars.warning(context, message: event.message);
+    });
+
     events.on<ActionEvent>().listen((event) {
       EventSnackBars.action(context, event: event);
     });
