@@ -18,11 +18,18 @@ class ScaffoldEventLayer extends StatefulWidget {
 }
 
 class _ScaffoldEventLayerState extends State<ScaffoldEventLayer> {
-  final events = Inject().get<EventBus>();
+  static _ScaffoldEventLayerState? _currentState;
 
   @override
-  void didChangeDependencies() {
-    _attachToEvents(context);
+  void initState() {
+    //print('XXX ScaffoldEventLayer.${this.hashCode} initialized');
+    if (_currentState == null || _currentState != this) {
+      if (_currentState == null) {
+        _ScaffoldEventLayerState._attachToEvents();
+      }
+      //print('XXX ScaffoldEventLayer _currentState changed');
+      _currentState = this;
+    }
   }
 
   @override
@@ -30,25 +37,40 @@ class _ScaffoldEventLayerState extends State<ScaffoldEventLayer> {
     return widget.scaffold;
   }
 
-  void _attachToEvents(BuildContext context) {
+  @override
+  void deactivate() {
+    //print('XXX ScaffoldEventLayer.${this.hashCode} deactivated');
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    //print('XXX ScaffoldEventLayer.${this.hashCode} disposed');
+    super.dispose();
+  }
+
+  static void _attachToEvents() {
+    final events = Inject().get<EventBus>();
+    //print('XXX ScaffoldEventLayer._attachToEvents() invoked');
+
     events.on<ErrorAppEvent>().listen((event) {
-      SnackBars.error(context, message: event.message);
+      SnackBars.error(_currentState!.context, message: event.message);
     });
 
     events.on<SuccessAppEvent>().listen((event) {
-      SnackBars.success(context, message: event.message);
+      SnackBars.success(_currentState!.context, message: event.message);
     });
 
     events.on<InfoAppEvent>().listen((event) {
-      SnackBars.info(context, message: event.message);
+      SnackBars.info(_currentState!.context, message: event.message);
     });
 
     events.on<WarningAppEvent>().listen((event) {
-      SnackBars.warning(context, message: event.message);
+      SnackBars.warning(_currentState!.context, message: event.message);
     });
 
     events.on<ActionEvent>().listen((event) {
-      EventSnackBars.action(context, event: event);
+      EventSnackBars.action(_currentState!.context, event: event);
     });
   }
 }
